@@ -1,0 +1,27 @@
+main.session {
+  section {
+    position: relative;
+  }
+
+  .session-container {
+    transform: scale(0.65);
+    transform-origin: top;
+  }
+
+  .mouse-event {
+    transition: width 0.5s, height 0.5s;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    visibility: hidden;
+  }
+
+  .mouse-event.visible {
+    visibility: visible;
+  }
+
+  .mouse-event.click {
+    width: 30px;
+    height: 30px;
+  }
+}

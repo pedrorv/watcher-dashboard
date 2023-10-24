@@ -1,5 +1,6 @@
 import { For, createResource } from "solid-js";
 import { A } from "@solidjs/router";
+import { Spinner } from "../components/Spinner";
 
 const getSessions = (appId: string): Promise<string[]> =>
   fetch(`http://localhost:3000/sessions/${appId}`)
@@ -16,7 +17,7 @@ function Home() {
         <h1>Sessions</h1>
       </header>
       <section>
-        <For each={sessions()}>
+        <For each={sessions()} fallback={<Spinner size={60} />}>
           {(session) => <A href={`/session/${session}`}>{session}</A>}
         </For>
       </section>
