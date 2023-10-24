@@ -1,0 +1,17 @@
+main.page {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  header {
+    max-width: 980px;
+    text-align: center;
+  }
+
+  section {
+    display: flex;
+    flex-direction: column;
+  }
+}
