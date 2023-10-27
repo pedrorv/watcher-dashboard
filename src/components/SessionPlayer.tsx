@@ -18,10 +18,7 @@ function SessionPlayer({ events }: { events: any[] }) {
 
   createEffect(() => {
     const initialTimestamp = events[0].timestamp;
-    const sessionFrame = document.getElementById(
-      "session-frame"
-    ) as HTMLIFrameElement;
-    if (!sessionFrame) return;
+    let activeIframe: HTMLIFrameElement;
 
     const updateInputValue = (
       iframe: HTMLIFrameElement,
@@ -36,23 +33,26 @@ function SessionPlayer({ events }: { events: any[] }) {
       }
     };
 
-    const typeOnInputs = (keyboardEvents: any[]) => {
-      keyboardEvents.forEach((event: any) => {
+    const typeOnInputs = () => {
+      keydownEvents().forEach((event: any) => {
         const { timestamp, unique_selector } = event;
 
         setTimeout(() => {
-          updateInputValue(sessionFrame, unique_selector, (val) => val + "*");
+          updateInputValue(activeIframe, unique_selector, (val) => val + "*");
         }, timestamp - initialTimestamp);
       });
     };
 
-    const clearAllInputs = (keyboardEvents: any[]) => {
+    const clearAllInputs = () => {
       const uniqueSelectors = Array.from(
-        new Set(keyboardEvents.map((e) => e.unique_selector))
+        new Set(keydownEvents().map((e) => e.unique_selector))
       );
+      const iframes = uiEvents().map((e) => document.getElementById(e.id));
 
       uniqueSelectors.forEach((selector) => {
-        updateInputValue(sessionFrame, selector, () => "");
+        iframes.forEach((iframe) => {
+          updateInputValue(iframe as HTMLIFrameElement, selector, () => "");
+        });
       });
     };
 
@@ -83,26 +83,36 @@ function SessionPlayer({ events }: { events: any[] }) {
         const { timestamp } = event;
 
         setTimeout(() => {
-          requestAnimationFrame(() => {
-            Object.assign(sessionFrame, {
-              width: event.properties.innerWidth,
-              height: event.properties.htmlHeight,
-              srcdoc: event.properties.screenshot,
-            });
-          });
+          const previous = arr[index - 1] ?? arr[arr.length - 1];
+          const currentIframe = document.getElementById(event.id);
+          const previousIframe = document.getElementById(previous.id);
 
-          if (index === arr.length - 1) {
-            setTimeout(() => {
-              clearAllInputs(keydownEvents());
-              execGif();
-            }, events[events.length - 1].timestamp - timestamp + 1000);
+          if (currentIframe) {
+            activeIframe = currentIframe as HTMLIFrameElement;
+
+            requestAnimationFrame(() => {
+              currentIframe.classList.add("visible");
+
+              if (previousIframe) {
+                previousIframe.classList.remove("visible");
+              }
+
+              requestAnimationFrame(() => {});
+            });
+
+            if (index === arr.length - 1) {
+              setTimeout(() => {
+                clearAllInputs();
+                execGif();
+              }, events[events.length - 1].timestamp - timestamp + 1000);
+            }
           }
         }, timestamp - initialTimestamp);
       });
 
       showMouseDots(mousemoveEvents());
       showMouseDots(clickEvents());
-      typeOnInputs(keydownEvents());
+      typeOnInputs();
     };
 
     execGif();

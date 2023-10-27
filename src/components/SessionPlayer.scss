@@ -1,4 +1,29 @@
 .session-player {
   transform: scale(0.65);
   transform-origin: top;
+
+  .mouse-event {
+    transition: width 0.5s, height 0.5s;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    visibility: hidden;
+
+    &.visible {
+      visibility: visible;
+    }
+
+    &.click {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  .session-frame {
+    display: none;
+
+    &.visible {
+      display: block;
+    }
+  }
 }
