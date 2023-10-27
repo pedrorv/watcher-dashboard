@@ -1,20 +1,14 @@
-import { For } from "solid-js";
-
 function SessionFrames({ uiEvents }: { uiEvents: any[] }) {
+  const event = uiEvents[0];
+
   return (
-    <>
-      <For each={uiEvents}>
-        {(event) => (
-          <iframe
-            id={event.id}
-            style={{ border: "none", display: "none", margin: "0 auto" }}
-            width={event.properties.innerWidth}
-            height={event.properties.innerHeight}
-            src={`data:text/html;base64,${btoa(event.properties.screenshot)}`}
-          />
-        )}
-      </For>
-    </>
+    <iframe
+      id={"session-frame"}
+      style={{ border: "none", margin: "0 auto" }}
+      width={event.properties.innerWidth}
+      height={event.properties.innerHeight}
+      srcdoc={event.properties.screenshot}
+    />
   );
 }
 
