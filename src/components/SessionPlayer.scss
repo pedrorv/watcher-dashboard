@@ -4,6 +4,7 @@
 
   .mouse-event {
     transition: width 0.5s, height 0.5s;
+    transition-timing-function: ease-out;
     width: 10px;
     height: 10px;
     border-radius: 50%;
