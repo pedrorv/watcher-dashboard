@@ -48,16 +48,20 @@ function SessionPlayer({ events }: { events: any[] }) {
           const previousIframe = document.getElementById(previous.id);
 
           if (currentIframe) {
-            currentIframe.style.display = "block";
+            requestAnimationFrame(() => {
+              currentIframe.style.display = "block";
 
-            if (previousIframe) {
-              previousIframe.style.display = "none";
-            }
+              requestAnimationFrame(() => {
+                if (previousIframe) {
+                  previousIframe.style.display = "none";
+                }
+              });
+            });
 
             if (index === arr.length - 1) {
               setTimeout(
                 execGif,
-                events[events.length - 1].timestamp - initialTimestamp + 1000
+                events[events.length - 1].timestamp - timestamp + 1000
               );
             }
           }
