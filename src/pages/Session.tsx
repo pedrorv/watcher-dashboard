@@ -10,7 +10,6 @@ const getEvents = (sessionId: string): Promise<any[]> =>
   fetch(`http://localhost:3000/events/${sessionId}`)
     .then((res) => res.json())
     .then(SessionPlayerService.filterSessionEvents)
-    .then(SessionPlayerService.fillGapsWithEmptyEvents)
     .catch(() => []);
 
 export const Session = () => {

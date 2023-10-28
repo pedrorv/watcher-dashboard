@@ -5,11 +5,16 @@ import { SessionPlayerState } from "@/types";
 const MILLIS_TO_HIDE_MOUSE_EVENTS = 1000;
 
 export class SessionPlayerService {
+  private originalEvents: any[];
+
   constructor(
     private sessionPlayerState: SessionPlayerState,
     private events: any[],
     private setCurTimestamp: (curTimestamp: number) => void
-  ) {}
+  ) {
+    this.originalEvents = events;
+    this.events = SessionPlayerService.fillGapsWithEmptyEvents(events);
+  }
 
   static filterSessionEvents(events: any[]) {
     return events.filter((e) =>
@@ -17,7 +22,7 @@ export class SessionPlayerService {
     );
   }
 
-  static fillGapsWithEmptyEvents(events: any[]) {
+  private static fillGapsWithEmptyEvents(events: any[]) {
     const eventsAndEmptyEvents: any[] = [];
 
     let currIdx = 0;
@@ -47,17 +52,17 @@ export class SessionPlayerService {
   }
 
   private get keydownEvents(): any[] {
-    return this.events.filter(
+    return this.originalEvents.filter(
       (e) => e.type === "keyboard" && e.name === "keydown"
     );
   }
 
   private get mouseEvents(): any[] {
-    return this.events.filter((e) => e.type === "mouse");
+    return this.originalEvents.filter((e) => e.type === "mouse");
   }
 
   private get uiEvents(): any[] {
-    return this.events.filter((e) => e.type === "ui");
+    return this.originalEvents.filter((e) => e.type === "ui");
   }
 
   private setCurrentTimestamp(timestamp: number) {
@@ -87,7 +92,7 @@ export class SessionPlayerService {
     const eventsToDisplay = this.events.filter(
       (e) => e.timestamp >= playStartTimestamp
     );
-    const eventsToHide = this.events.filter(
+    const eventsToHide = this.originalEvents.filter(
       (e) =>
         e.timestamp >= playStartTimestamp - MILLIS_TO_HIDE_MOUSE_EVENTS &&
         e.timestamp <= playStartTimestamp &&
