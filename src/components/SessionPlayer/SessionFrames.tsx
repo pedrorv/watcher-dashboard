@@ -1,6 +1,6 @@
 import { For } from "solid-js";
 
-function SessionFrames({ uiEvents }: { uiEvents: any[] }) {
+export const SessionFrames = ({ uiEvents }: { uiEvents: any[] }) => {
   return (
     <>
       <For each={uiEvents}>
@@ -18,6 +18,4 @@ function SessionFrames({ uiEvents }: { uiEvents: any[] }) {
       </For>
     </>
   );
-}
-
-export default SessionFrames;
+};

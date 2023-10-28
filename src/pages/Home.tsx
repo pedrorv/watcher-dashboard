@@ -7,7 +7,7 @@ const getSessions = (appId: string): Promise<string[]> =>
     .then((res) => res.json())
     .catch(() => []);
 
-function Home() {
+export const Home = () => {
   const appId = "ebf05be7-d3fe-4df3-a789-0a641747d7a2";
   const [sessions] = createResource(appId, getSessions);
 
@@ -23,6 +23,4 @@ function Home() {
       </section>
     </main>
   );
-}
-
-export default Home;
+};

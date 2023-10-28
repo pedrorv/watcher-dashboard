@@ -1,6 +1,6 @@
 import { For } from "solid-js";
 
-function MouseEvents({ mouseEvents }: { mouseEvents: any[] }) {
+export const MouseEvents = ({ mouseEvents }: { mouseEvents: any[] }) => {
   return (
     <>
       <For each={mouseEvents}>
@@ -27,6 +27,4 @@ function MouseEvents({ mouseEvents }: { mouseEvents: any[] }) {
       </For>
     </>
   );
-}
-
-export default MouseEvents;
+};

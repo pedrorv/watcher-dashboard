@@ -1,7 +1,7 @@
 import { Show, createResource } from "solid-js";
 import { useParams } from "@solidjs/router";
-import { Spinner } from "../components/Spinner";
-import SessionPlayer from "../components/SessionPlayer";
+import { Spinner } from "@/components/Spinner";
+import { SessionPlayer } from "@/components/SessionPlayer";
 
 import "./Session.scss";
 
@@ -10,7 +10,7 @@ const getEvents = (sessionId: string): Promise<any[]> =>
     .then((res) => res.json())
     .catch(() => []);
 
-function Session() {
+export const Session = () => {
   const params = useParams();
   const [events] = createResource(() => params.id, getEvents);
 
@@ -30,6 +30,4 @@ function Session() {
       </section>
     </main>
   );
-}
-
-export default Session;
+};
