@@ -6,11 +6,8 @@ import "./SessionPlayer.scss";
 
 function SessionPlayer({ events }: { events: any[] }) {
   const uiEvents = createMemo(() => events.filter((e) => e.type === "ui"));
-  const mousemoveEvents = createMemo(() =>
-    events.filter((e) => e.type === "mouse" && e.name === "mousemove")
-  );
-  const clickEvents = createMemo(() =>
-    events.filter((e) => e.type === "mouse" && e.name === "click")
+  const mouseEvents = createMemo(() =>
+    events.filter((e) => e.type === "mouse")
   );
   const keydownEvents = createMemo(() =>
     events.filter((e) => e.type === "keyboard" && e.name === "keydown")
@@ -33,21 +30,19 @@ function SessionPlayer({ events }: { events: any[] }) {
       }
     };
 
-    const typeOnInputs = () => {
-      keydownEvents().forEach((event: any) => {
-        const { timestamp, unique_selector } = event;
-
-        setTimeout(() => {
-          updateInputValue(activeIframe, unique_selector, (val) => val + "*");
-        }, timestamp - initialTimestamp);
-      });
+    const displayKeydownEvent = ({
+      unique_selector,
+    }: {
+      unique_selector: string;
+    }) => {
+      updateInputValue(activeIframe, unique_selector, (val) => val + "*");
     };
 
     const clearAllInputs = () => {
       const uniqueSelectors = Array.from(
         new Set(keydownEvents().map((e) => e.unique_selector))
       );
-      const iframes = uiEvents().map((e) => document.getElementById(e.id));
+      const iframes = document.querySelectorAll("iframe.session-frame");
 
       uniqueSelectors.forEach((selector) => {
         iframes.forEach((iframe) => {
@@ -56,63 +51,65 @@ function SessionPlayer({ events }: { events: any[] }) {
       });
     };
 
-    const showMouseDots = (mouseEvents: any[]) => {
-      mouseEvents.forEach((event: any) => {
-        const { timestamp } = event;
-        const isClick = event.name === "click";
-        const div = document.getElementById(event.id);
-        if (!div) return;
+    const displayMouseEvent = (event: any) => {
+      const isClick = event.name === "click";
+      const div = document.getElementById(event.id);
+      if (!div) return;
 
-        setTimeout(() => {
-          div.classList.add("visible");
-          if (isClick) {
-            div.classList.add("click");
-          }
-          setTimeout(() => {
-            div.classList.remove("visible");
-            if (isClick) {
-              div.classList.remove("click");
-            }
-          }, 1000);
-        }, timestamp - initialTimestamp);
-      });
+      div.classList.add("visible");
+      if (isClick) {
+        div.classList.add("click");
+      }
+    };
+
+    const hideMouseEvent = (event: any) => {
+      const isClick = event.name === "click";
+      const div = document.getElementById(event.id);
+      if (!div) return;
+
+      div.classList.remove("visible");
+      if (isClick) {
+        div.classList.remove("click");
+      }
+    };
+
+    const displayUIEvent = (event: any) => {
+      const currentIframe = document.getElementById(event.id);
+      const previousIframe = activeIframe;
+
+      if (currentIframe) {
+        activeIframe = currentIframe as HTMLIFrameElement;
+
+        currentIframe.classList.add("visible");
+
+        if (previousIframe) {
+          previousIframe.classList.remove("visible");
+        }
+      }
     };
 
     const execGif = () => {
-      uiEvents().forEach((event, index, arr) => {
+      events.forEach((event, index, arr) => {
         const { timestamp } = event;
 
         setTimeout(() => {
-          const previous = arr[index - 1] ?? arr[arr.length - 1];
-          const currentIframe = document.getElementById(event.id);
-          const previousIframe = document.getElementById(previous.id);
+          if (event.name === "keydown") {
+            displayKeydownEvent(event);
+          } else if (event.type === "mouse") {
+            displayMouseEvent(event);
+            setTimeout(() => hideMouseEvent(event), 1000);
+          } else if (event.type === "ui") {
+            displayUIEvent(event);
+          }
 
-          if (currentIframe) {
-            activeIframe = currentIframe as HTMLIFrameElement;
-
-            requestAnimationFrame(() => {
-              currentIframe.classList.add("visible");
-
-              if (previousIframe) {
-                previousIframe.classList.remove("visible");
-              }
-
-              requestAnimationFrame(() => {});
-            });
-
-            if (index === arr.length - 1) {
-              setTimeout(() => {
-                clearAllInputs();
-                execGif();
-              }, events[events.length - 1].timestamp - timestamp + 1000);
-            }
+          if (index === arr.length - 1) {
+            setTimeout(() => {
+              clearAllInputs();
+              execGif();
+            }, 2000);
           }
         }, timestamp - initialTimestamp);
       });
-
-      showMouseDots(mousemoveEvents());
-      showMouseDots(clickEvents());
-      typeOnInputs();
     };
 
     execGif();
@@ -121,8 +118,7 @@ function SessionPlayer({ events }: { events: any[] }) {
   return (
     <div class="session-player">
       <SessionFrames uiEvents={uiEvents()} />
-      <MouseEvents mouseEvents={mousemoveEvents()} />
-      <MouseEvents mouseEvents={clickEvents()} />
+      <MouseEvents mouseEvents={mouseEvents()} />
     </div>
   );
 }

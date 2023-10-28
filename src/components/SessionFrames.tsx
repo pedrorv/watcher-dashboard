@@ -4,10 +4,11 @@ function SessionFrames({ uiEvents }: { uiEvents: any[] }) {
   return (
     <>
       <For each={uiEvents}>
-        {(event) => (
+        {(event, i) => (
           <iframe
             id={event.id}
             class="session-frame"
+            classList={{ visible: !i() }}
             style={{ border: "none", margin: "0 auto" }}
             width={event.properties.innerWidth}
             height={event.properties.htmlHeight}
