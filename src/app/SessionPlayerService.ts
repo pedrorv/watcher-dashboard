@@ -8,6 +8,12 @@ export class SessionPlayerService {
     private setCurTimestamp: (curTimestamp: number) => void
   ) {}
 
+  static filterSessionEvents(events: any[]) {
+    return events.filter((e) =>
+      ["keydown", "mousemove", "click", "dom-change"].includes(e.name)
+    );
+  }
+
   play(): void {
     const initialTimestamp = this.events[0].timestamp;
     const keydownEvents = this.events.filter(

@@ -2,12 +2,14 @@ import { Show, createResource } from "solid-js";
 import { useParams } from "@solidjs/router";
 import { Spinner } from "@/components/Spinner";
 import { SessionPlayer } from "@/components/SessionPlayer";
+import { SessionPlayerService } from "@/app/SessionPlayerService";
 
 import "./Session.scss";
 
 const getEvents = (sessionId: string): Promise<any[]> =>
   fetch(`http://localhost:3000/events/${sessionId}`)
     .then((res) => res.json())
+    .then((events) => SessionPlayerService.filterSessionEvents(events))
     .catch(() => []);
 
 export const Session = () => {
