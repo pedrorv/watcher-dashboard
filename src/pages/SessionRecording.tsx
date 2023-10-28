@@ -4,7 +4,7 @@ import { Spinner } from "@/components/Spinner";
 import { SessionPlayer } from "@/components/SessionPlayer";
 import { SessionPlayerService } from "@/app/SessionPlayerService";
 
-import "./Session.scss";
+import "./SessionRecording.scss";
 
 const getEvents = (sessionId: string): Promise<any[]> =>
   fetch(`http://localhost:3000/events/${sessionId}`)
@@ -12,15 +12,14 @@ const getEvents = (sessionId: string): Promise<any[]> =>
     .then(SessionPlayerService.filterSessionEvents)
     .catch(() => []);
 
-export const Session = () => {
+export const SessionRecording = () => {
   const params = useParams();
   const [events] = createResource(() => params.id, getEvents);
 
   return (
-    <main class="page session">
+    <main class="page session-recording">
       <header>
-        <h1>Session</h1>
-        <h3>{params.id}</h3>
+        <h1>Session Recording</h1>
       </header>
       <section>
         <Show

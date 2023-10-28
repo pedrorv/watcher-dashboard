@@ -1,6 +1,9 @@
 .session-player {
-  transform: scale(0.65);
-  transform-origin: top;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: scale(0.65) translate(-50%, calc(-50% - 62px));
+  transform-origin: top left;
 
   .mouse-event {
     transition: width 0.5s, height 0.5s;
