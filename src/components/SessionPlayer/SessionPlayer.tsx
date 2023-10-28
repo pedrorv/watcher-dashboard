@@ -2,7 +2,7 @@ import { createMemo, createEffect, createSignal } from "solid-js";
 
 import { SessionFrames } from "./SessionFrames";
 import { MouseEvents } from "./MouseEvents";
-import { PlaySession } from "@/use-cases/PlaySession";
+import { SessionPlayerService } from "@/app/SessionPlayerService";
 
 import "./SessionPlayer.scss";
 import { SessionControls } from "./SessionControls";
@@ -23,16 +23,22 @@ export const SessionPlayer = (props: { events: any[] }) => {
   const activeIframe = document.querySelector(
     "session-frame.visible"
   ) as HTMLIFrameElement;
-  const playSessionState = { activeIframe };
-  const playSession = new PlaySession(
-    playSessionState,
+  const sessionPlayerState = {
+    activeIframe,
+    timers: [],
+    curTimestamp: curTimestamp(),
+  };
+  const sessionPlayerService = new SessionPlayerService(
+    sessionPlayerState,
     props.events,
     setCurTimestamp
   );
 
   createEffect(() => {
     if (playing()) {
-      playSession.execute();
+      sessionPlayerService.play();
+    } else {
+      sessionPlayerService.pause();
     }
   });
 

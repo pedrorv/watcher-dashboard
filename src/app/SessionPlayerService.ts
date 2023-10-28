@@ -1,14 +1,14 @@
 import { playSessionOperationsFactory } from "@/factories/playSessionOperationsFactory";
-import { PlaySessionState } from "@/types";
+import { SessionPlayerState } from "@/types";
 
-export class PlaySession {
+export class SessionPlayerService {
   constructor(
-    private playSessionState: PlaySessionState,
+    private sessionPlayerState: SessionPlayerState,
     private events: any[],
     private setCurTimestamp: (curTimestamp: number) => void
   ) {}
 
-  execute(): void {
+  play(): void {
     const initialTimestamp = this.events[0].timestamp;
     const keydownEvents = this.events.filter(
       (e) => e.type === "keyboard" && e.name === "keydown"
@@ -19,29 +19,44 @@ export class PlaySession {
       displayUIEvent,
       hideMouseEvent,
       clearAllInputs,
-    } = playSessionOperationsFactory(this.playSessionState);
+    } = playSessionOperationsFactory(this.sessionPlayerState);
 
     this.events.forEach((event, index, arr) => {
       const { timestamp } = event;
 
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         this.setCurTimestamp(timestamp);
+        this.sessionPlayerState.curTimestamp = timestamp;
 
         if (event.name === "keydown") {
           displayKeydownEvent(event);
         } else if (event.type === "mouse") {
           displayMouseEvent(event);
-          setTimeout(() => hideMouseEvent(event), 1000);
+          this.sessionPlayerState.timers.push(
+            setTimeout(() => hideMouseEvent(event), 1000)
+          );
         } else if (event.type === "ui") {
           displayUIEvent(event);
         }
 
         if (index === arr.length - 1) {
-          setTimeout(() => {
-            clearAllInputs(keydownEvents);
-          }, 2000);
+          this.sessionPlayerState.timers.push(
+            setTimeout(() => {
+              clearAllInputs(keydownEvents);
+            }, 2000)
+          );
         }
       }, timestamp - initialTimestamp);
+
+      this.sessionPlayerState.timers.push(timer);
     });
+  }
+
+  pause(): void {
+    this.sessionPlayerState.timers.forEach(clearTimeout);
+    this.sessionPlayerState.timers.splice(
+      0,
+      this.sessionPlayerState.timers.length
+    );
   }
 }
