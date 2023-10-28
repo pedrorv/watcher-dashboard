@@ -1,6 +1,9 @@
 import { playSessionOperationsFactory } from "@/factories/playSessionOperationsFactory";
 import { SessionPlayerState } from "@/types";
 
+const MILLIS_TO_HIDE_MOUSE_EVENTS = 1000;
+const MILLIS_TO_RESTART = 2000;
+
 export class SessionPlayerService {
   constructor(
     private sessionPlayerState: SessionPlayerState,
@@ -29,7 +32,7 @@ export class SessionPlayerService {
   }
 
   play(): void {
-    const initialTimestamp = this.events[0].timestamp;
+    const playStartTimestamp = this.sessionPlayerState.curTimestamp;
     const {
       displayKeydownEvent,
       displayMouseEvent,
@@ -38,7 +41,33 @@ export class SessionPlayerService {
       clearAllInputs,
     } = playSessionOperationsFactory(this.sessionPlayerState);
 
-    this.events.forEach((event, index, arr) => {
+    const eventsToDisplay = this.events.filter(
+      (e) => e.timestamp >= playStartTimestamp
+    );
+    const eventsToHide = this.events.filter(
+      (e) =>
+        e.timestamp >= playStartTimestamp - MILLIS_TO_HIDE_MOUSE_EVENTS &&
+        e.timestamp <= playStartTimestamp &&
+        e.type === "mouse"
+    );
+
+    const hideStartTimestamp = eventsToHide[0]?.timestamp;
+    eventsToHide.forEach((event) => {
+      const { timestamp } = event;
+
+      const timer = setTimeout(() => {
+        this.sessionPlayerState.timers.push(
+          setTimeout(
+            () => hideMouseEvent(event),
+            timestamp - playStartTimestamp + MILLIS_TO_HIDE_MOUSE_EVENTS
+          )
+        );
+      }, timestamp - hideStartTimestamp);
+
+      this.sessionPlayerState.timers.push(timer);
+    });
+
+    eventsToDisplay.forEach((event, index, arr) => {
       const { timestamp } = event;
 
       const timer = setTimeout(() => {
@@ -50,7 +79,7 @@ export class SessionPlayerService {
         } else if (event.type === "mouse") {
           displayMouseEvent(event);
           this.sessionPlayerState.timers.push(
-            setTimeout(() => hideMouseEvent(event), 1000)
+            setTimeout(() => hideMouseEvent(event), MILLIS_TO_HIDE_MOUSE_EVENTS)
           );
         } else if (event.type === "ui") {
           displayUIEvent(event);
@@ -60,10 +89,10 @@ export class SessionPlayerService {
           this.sessionPlayerState.timers.push(
             setTimeout(() => {
               clearAllInputs(this.keydownEvents);
-            }, 2000)
+            }, MILLIS_TO_RESTART)
           );
         }
-      }, timestamp - initialTimestamp);
+      }, timestamp - playStartTimestamp);
 
       this.sessionPlayerState.timers.push(timer);
     });
