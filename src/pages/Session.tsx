@@ -9,7 +9,8 @@ import "./Session.scss";
 const getEvents = (sessionId: string): Promise<any[]> =>
   fetch(`http://localhost:3000/events/${sessionId}`)
     .then((res) => res.json())
-    .then((events) => SessionPlayerService.filterSessionEvents(events))
+    .then(SessionPlayerService.filterSessionEvents)
+    .then(SessionPlayerService.fillGapsWithEmptyEvents)
     .catch(() => []);
 
 export const Session = () => {
