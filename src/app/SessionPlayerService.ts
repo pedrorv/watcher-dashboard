@@ -23,6 +23,7 @@ export class SessionPlayerService {
     let currIdx = 0;
     for (let nextIdx = 1; nextIdx <= events.length - 1; nextIdx++) {
       eventsAndEmptyEvents.push(events[currIdx]);
+
       const currTimestamp = events[currIdx].timestamp;
       const nextTimestamp = events[nextIdx].timestamp;
       const emptyEventsToAddCount = Math.max(
@@ -38,9 +39,9 @@ export class SessionPlayerService {
         });
       }
 
-      eventsAndEmptyEvents.push(events[nextIdx]);
       currIdx = nextIdx;
     }
+    eventsAndEmptyEvents.push(events[currIdx]);
 
     return eventsAndEmptyEvents;
   }
