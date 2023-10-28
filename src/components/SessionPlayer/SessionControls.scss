@@ -36,6 +36,19 @@ $light-color: #a0a0a0;
     }
   }
 
+  .stop-btn {
+    cursor: pointer;
+    width: $play-pause-size;
+    height: $play-pause-size;
+    background: $dark-color;
+    transition: all 100ms ease-in-out;
+    margin-left: 1rem;
+
+    &:hover {
+      background: $medium-color;
+    }
+  }
+
   .track-container {
     position: relative;
     width: 100%;

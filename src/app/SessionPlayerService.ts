@@ -14,11 +14,22 @@ export class SessionPlayerService {
     );
   }
 
-  play(): void {
-    const initialTimestamp = this.events[0].timestamp;
-    const keydownEvents = this.events.filter(
+  private get keydownEvents(): any[] {
+    return this.events.filter(
       (e) => e.type === "keyboard" && e.name === "keydown"
     );
+  }
+
+  private get mouseEvents(): any[] {
+    return this.events.filter((e) => e.type === "mouse");
+  }
+
+  private get uiEvents(): any[] {
+    return this.events.filter((e) => e.type === "ui");
+  }
+
+  play(): void {
+    const initialTimestamp = this.events[0].timestamp;
     const {
       displayKeydownEvent,
       displayMouseEvent,
@@ -48,7 +59,7 @@ export class SessionPlayerService {
         if (index === arr.length - 1) {
           this.sessionPlayerState.timers.push(
             setTimeout(() => {
-              clearAllInputs(keydownEvents);
+              clearAllInputs(this.keydownEvents);
             }, 2000)
           );
         }
@@ -64,5 +75,16 @@ export class SessionPlayerService {
       0,
       this.sessionPlayerState.timers.length
     );
+  }
+
+  stop(): void {
+    const { clearAllInputs, hideMouseEvent, displayUIEvent } =
+      playSessionOperationsFactory(this.sessionPlayerState);
+
+    this.pause();
+    clearAllInputs(this.keydownEvents);
+    this.mouseEvents.forEach(hideMouseEvent);
+    displayUIEvent(this.uiEvents[0]);
+    this.setCurTimestamp(this.events[0].timestamp);
   }
 }

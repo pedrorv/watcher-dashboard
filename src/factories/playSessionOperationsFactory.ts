@@ -1,7 +1,7 @@
-import { PlaySessionState } from "@/types";
+import { SessionPlayerState } from "@/types";
 
 export const playSessionOperationsFactory = (
-  playSessionState: PlaySessionState
+  sessionPlayerState: SessionPlayerState
 ) => {
   const updateInputValue = (
     iframe: HTMLIFrameElement,
@@ -22,7 +22,7 @@ export const playSessionOperationsFactory = (
     unique_selector: string;
   }) => {
     updateInputValue(
-      playSessionState.activeIframe,
+      sessionPlayerState.activeIframe,
       unique_selector,
       (val) => val + "*"
     );
@@ -57,14 +57,14 @@ export const playSessionOperationsFactory = (
 
   const displayUIEvent = (event: any) => {
     const currentIframe = document.getElementById(event.id);
-    const previousIframe = playSessionState.activeIframe;
+    const previousIframe = sessionPlayerState.activeIframe;
 
     if (currentIframe) {
-      playSessionState.activeIframe = currentIframe as HTMLIFrameElement;
+      sessionPlayerState.activeIframe = currentIframe as HTMLIFrameElement;
 
       currentIframe.classList.add("visible");
 
-      if (previousIframe) {
+      if (previousIframe && previousIframe !== currentIframe) {
         previousIframe.classList.remove("visible");
       }
     }

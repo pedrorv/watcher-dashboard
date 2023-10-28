@@ -4,6 +4,7 @@ import "./SessionControls.scss";
 type SessionControlsProps = {
   playing: boolean;
   togglePlaying: () => void;
+  stopPlaying: () => void;
   minTimestamp: number;
   curTimestamp: number;
   maxTimestamp: number;
@@ -29,6 +30,7 @@ export const SessionControls = (props: SessionControlsProps) => {
         classList={{ pause: props.playing }}
         onClick={props.togglePlaying}
       />
+      <div class="stop-btn" onClick={props.stopPlaying} />
       <div class="track-container">
         <div class="track-background" />
         <div class="track-foreground" style={{ width: `${percentage()}%` }} />

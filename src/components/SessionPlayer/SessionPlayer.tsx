@@ -13,7 +13,18 @@ export const SessionPlayer = (props: { events: any[] }) => {
   const maxTimestamp = last(props.events)?.timestamp;
   const [curTimestamp, setCurTimestamp] = createSignal(minTimestamp);
   const [playing, setPlaying] = createSignal(false);
-  const togglePlaying = () => setPlaying(!playing());
+  const togglePlaying = () => {
+    if (playing()) {
+      sessionPlayerService.pause();
+    } else {
+      sessionPlayerService.play();
+    }
+    setPlaying(!playing());
+  };
+  const stopPlaying = () => {
+    setPlaying(false);
+    sessionPlayerService.stop();
+  };
   const uiEvents = createMemo(() =>
     props.events.filter((e) => e.type === "ui")
   );
@@ -35,10 +46,8 @@ export const SessionPlayer = (props: { events: any[] }) => {
   );
 
   createEffect(() => {
-    if (playing()) {
-      sessionPlayerService.play();
-    } else {
-      sessionPlayerService.pause();
+    if (curTimestamp() === maxTimestamp) {
+      setPlaying(false);
     }
   });
 
@@ -51,6 +60,7 @@ export const SessionPlayer = (props: { events: any[] }) => {
       <SessionControls
         playing={playing()}
         togglePlaying={togglePlaying}
+        stopPlaying={stopPlaying}
         minTimestamp={minTimestamp}
         curTimestamp={curTimestamp()}
         maxTimestamp={maxTimestamp}
