@@ -31,6 +31,11 @@ export class SessionPlayerService {
     return this.events.filter((e) => e.type === "ui");
   }
 
+  private setCurrentTimestamp(timestamp: number) {
+    this.setCurTimestamp(timestamp);
+    this.sessionPlayerState.curTimestamp = timestamp;
+  }
+
   play(): void {
     const playStartTimestamp = this.sessionPlayerState.curTimestamp;
     const {
@@ -71,8 +76,7 @@ export class SessionPlayerService {
       const { timestamp } = event;
 
       const timer = setTimeout(() => {
-        this.setCurTimestamp(timestamp);
-        this.sessionPlayerState.curTimestamp = timestamp;
+        this.setCurrentTimestamp(timestamp);
 
         if (event.name === "keydown") {
           displayKeydownEvent(event);
@@ -100,10 +104,7 @@ export class SessionPlayerService {
 
   pause(): void {
     this.sessionPlayerState.timers.forEach(clearTimeout);
-    this.sessionPlayerState.timers.splice(
-      0,
-      this.sessionPlayerState.timers.length
-    );
+    this.sessionPlayerState.timers = [];
   }
 
   stop(): void {
@@ -114,6 +115,6 @@ export class SessionPlayerService {
     clearAllInputs(this.keydownEvents);
     this.mouseEvents.forEach(hideMouseEvent);
     displayUIEvent(this.uiEvents[0]);
-    this.setCurTimestamp(this.events[0].timestamp);
+    this.setCurrentTimestamp(this.events[0].timestamp);
   }
 }
