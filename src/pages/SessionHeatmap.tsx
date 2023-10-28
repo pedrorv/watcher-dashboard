@@ -1,15 +1,15 @@
 import { Show, createResource } from "solid-js";
 import { useParams } from "@solidjs/router";
 import { Spinner } from "@/components/Spinner";
-import { SessionPlayer } from "@/components/SessionPlayer";
-import { SessionPlayerService } from "@/app/SessionPlayerService";
+import { Heatmap } from "@/components/Heatmap";
+import { HeatmapService } from "@/app/HeatmapService";
 
 import "./SessionHeatmap.scss";
 
 const getEvents = (sessionId: string): Promise<any[]> =>
   fetch(`http://localhost:3000/events/${sessionId}`)
     .then((res) => res.json())
-    .then(SessionPlayerService.filterSessionEvents)
+    .then(HeatmapService.filterHeatmapEvents)
     .catch(() => []);
 
 export const SessionHeatmap = () => {
@@ -19,15 +19,14 @@ export const SessionHeatmap = () => {
   return (
     <main class="page session-heatmap">
       <header>
-        <h1>Session</h1>
-        <h3>{params.id}</h3>
+        <h1>Session Heatmap</h1>
       </header>
       <section>
         <Show
           when={!events.loading && events.state === "ready"}
           fallback={<Spinner size={60} />}
         >
-          <SessionPlayer events={events()!} />
+          <Heatmap events={events()!} />
         </Show>
       </section>
     </main>
