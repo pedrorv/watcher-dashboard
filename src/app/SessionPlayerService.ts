@@ -109,7 +109,7 @@ export class SessionPlayerService {
       this.sessionPlayerState.timers.push(timer);
     });
 
-    eventsToDisplay.forEach((event, index, arr) => {
+    eventsToDisplay.forEach((event) => {
       const { timestamp } = event;
 
       const timer = setTimeout(() => {
