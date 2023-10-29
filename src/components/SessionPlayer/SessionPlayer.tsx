@@ -86,10 +86,12 @@ export const SessionPlayer = (props: { events: any[] }) => {
   requestAnimationFrame(updatePlayerSize);
 
   const updatePlayerScroll = () => {
-    const sessionPlayer = document.getElementById("session-player-scroll");
+    const sessionPlayerScroll = document.getElementById(
+      "session-player-scroll"
+    );
 
-    if (sessionPlayer) {
-      Object.assign(sessionPlayer.style, {
+    if (sessionPlayerScroll) {
+      Object.assign(sessionPlayerScroll.style, {
         transform: `translate(${-playerScroll().scrollX}px, ${-playerScroll()
           .scrollY}px)`,
       });
