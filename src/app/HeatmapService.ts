@@ -24,9 +24,7 @@ export class HeatmapService {
   constructor(private events: any[]) {}
 
   static filterHeatmapEvents(events: any[]) {
-    return events.filter((e) =>
-      ["dom-change", "mousemove", "click"].includes(e.name)
-    );
+    return events.filter((e) => ["ui", "mouse"].includes(e.type));
   }
 
   private get mouseEvents(): any[] {
@@ -39,8 +37,14 @@ export class HeatmapService {
     });
 
     const data = this.mouseEvents.map((event) => ({
-      x: event.properties.clientX,
-      y: event.properties.clientY,
+      x:
+        event.properties.pageX ??
+        event.properties.screenX ??
+        event.properties.clientX,
+      y:
+        event.properties.pageY ??
+        event.properties.screenY ??
+        event.properties.clientY,
       value: mouseEventNameToVal(event.name),
     }));
 

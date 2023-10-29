@@ -6,7 +6,8 @@ export const MouseEvents = ({ mouseEvents }: { mouseEvents: any[] }) => {
       <For each={mouseEvents}>
         {(event) => {
           const isClick = event.name === "click";
-          const { clientX, clientY } = event.properties;
+          const { pageX, pageY, screenX, screenY, clientX, clientY } =
+            event.properties;
 
           return (
             <div
@@ -17,8 +18,8 @@ export const MouseEvents = ({ mouseEvents }: { mouseEvents: any[] }) => {
                 border: isClick ? "2px solid #bf0603" : undefined,
                 background: isClick ? "transparent" : "#bf0603",
                 opacity: isClick ? 0.8 : 0.3,
-                top: `${clientY}px`,
-                left: `${clientX}px`,
+                top: `${pageY ?? screenY ?? clientY}px`,
+                left: `${pageX ?? screenX ?? clientX}px`,
                 transform: "translate(-50%, -50%)",
               }}
             />

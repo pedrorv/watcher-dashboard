@@ -35,7 +35,7 @@ export const Heatmap = (props: { events: any[] }) => {
     >
       <iframe
         style={{ border: "none", margin: "0 auto" }}
-        width={uiEvent().properties.innerWidth}
+        width={uiEvent().properties.htmlWidth}
         height={uiEvent().properties.htmlHeight}
         srcdoc={uiEvent().properties.screenshot}
       />
