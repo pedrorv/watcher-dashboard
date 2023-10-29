@@ -9,10 +9,25 @@ import { SessionControls } from "./SessionControls";
 import { first, last } from "@/lib/array";
 
 export const SessionPlayer = (props: { events: any[] }) => {
+  const uiEvents = createMemo(() =>
+    props.events.filter((e) => e.type === "ui")
+  );
+  const mouseEvents = createMemo(() =>
+    props.events.filter((e) => e.type === "mouse")
+  );
   const minTimestamp = first(props.events)?.timestamp;
   const maxTimestamp = last(props.events)?.timestamp;
   const [curTimestamp, setCurTimestamp] = createSignal(minTimestamp);
   const [playing, setPlaying] = createSignal(false);
+  const [playerDimensions, setPlayerDimensions] = createSignal({
+    width: uiEvents()[0].properties.innerWidth,
+    height: uiEvents()[0].properties.innerHeight,
+  });
+  const [playerScroll, setPlayerScroll] = createSignal({
+    scrollX: 0,
+    scrollY: 0,
+  });
+
   const togglePlaying = () => {
     if (playing()) {
       sessionPlayerService.pause();
@@ -25,12 +40,6 @@ export const SessionPlayer = (props: { events: any[] }) => {
     setPlaying(false);
     sessionPlayerService.stop();
   };
-  const uiEvents = createMemo(() =>
-    props.events.filter((e) => e.type === "ui")
-  );
-  const mouseEvents = createMemo(() =>
-    props.events.filter((e) => e.type === "mouse")
-  );
   const activeIframe = document.querySelector(
     "session-frame.visible"
   ) as HTMLIFrameElement;
@@ -38,11 +47,16 @@ export const SessionPlayer = (props: { events: any[] }) => {
     activeIframe,
     timers: [],
     curTimestamp: curTimestamp(),
+    playerScroll: playerScroll(),
   };
   const sessionPlayerService = new SessionPlayerService(
     sessionPlayerState,
     props.events,
-    setCurTimestamp
+    {
+      setCurTimestamp,
+      setPlayerDimensions,
+      setPlayerScroll,
+    }
   );
 
   createEffect(() => {
@@ -51,11 +65,39 @@ export const SessionPlayer = (props: { events: any[] }) => {
     }
   });
 
+  const updatePlayerSize = () => {
+    const sessionPlayer = document.getElementById("session-player");
+
+    if (sessionPlayer) {
+      Object.assign(sessionPlayer.style, {
+        width: playerDimensions().width + "px",
+        height: playerDimensions().height + "px",
+      });
+    }
+    requestAnimationFrame(updatePlayerSize);
+  };
+  requestAnimationFrame(updatePlayerSize);
+
+  const updatePlayerScroll = () => {
+    const sessionPlayer = document.getElementById("session-player-scroll");
+
+    if (sessionPlayer) {
+      Object.assign(sessionPlayer.style, {
+        transform: `translate(${-playerScroll().scrollX}px, ${-playerScroll()
+          .scrollY}px)`,
+      });
+    }
+    requestAnimationFrame(updatePlayerScroll);
+  };
+  requestAnimationFrame(updatePlayerScroll);
+
   return (
     <>
-      <div class="session-player">
-        <SessionFrames uiEvents={uiEvents()} />
-        <MouseEvents mouseEvents={mouseEvents()} />
+      <div id="session-player" class="session-player">
+        <div id="session-player-scroll">
+          <SessionFrames uiEvents={uiEvents()} />
+          <MouseEvents mouseEvents={mouseEvents()} />
+        </div>
       </div>
       <SessionControls
         playing={playing()}

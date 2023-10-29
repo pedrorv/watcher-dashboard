@@ -55,7 +55,7 @@ export const playSessionOperationsFactory = (
   const displayMouseEvent = (e: any) => toggleMouseEvent(e, "add");
   const hideMouseEvent = (e: any) => toggleMouseEvent(e, "remove");
 
-  const displayUIEvent = (event: any) => {
+  const displayUIEvent = (event: any, cb?: (event: any) => void) => {
     const currentIframe = document.getElementById(event.id);
     const previousIframe = sessionPlayerState.activeIframe;
 
@@ -67,6 +67,8 @@ export const playSessionOperationsFactory = (
       if (previousIframe && previousIframe !== currentIframe) {
         previousIframe.classList.remove("visible");
       }
+
+      cb?.(event);
     }
   };
 

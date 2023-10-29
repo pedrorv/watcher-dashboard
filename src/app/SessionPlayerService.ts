@@ -10,7 +10,17 @@ export class SessionPlayerService {
   constructor(
     private sessionPlayerState: SessionPlayerState,
     private events: any[],
-    private setCurTimestamp: (curTimestamp: number) => void
+    private setters: {
+      setCurTimestamp: (curTimestamp: number) => void;
+      setPlayerDimensions: (playerDimensions: {
+        width: number;
+        height: number;
+      }) => void;
+      setPlayerScroll: (playerScroll: {
+        scrollX: number;
+        scrollY: number;
+      }) => void;
+    }
   ) {
     this.originalEvents = events;
     this.events = SessionPlayerService.fillGapsWithEmptyEvents(events);
@@ -18,7 +28,7 @@ export class SessionPlayerService {
 
   static filterSessionEvents(events: any[]) {
     return events.filter((e) =>
-      ["keydown", "mousemove", "click", "dom-change"].includes(e.name)
+      ["keydown", "mousemove", "click", "dom-change", "scroll"].includes(e.name)
     );
   }
 
@@ -66,8 +76,20 @@ export class SessionPlayerService {
   }
 
   private setCurrentTimestamp(timestamp: number) {
-    this.setCurTimestamp(timestamp);
+    this.setters.setCurTimestamp(timestamp);
     this.sessionPlayerState.curTimestamp = timestamp;
+  }
+
+  private setPlayerDimensions = (event: any) => {
+    this.setters.setPlayerDimensions({
+      width: event.properties.innerWidth,
+      height: event.properties.innerHeight,
+    });
+  };
+
+  private setPlayerScroll(newScroll: { scrollX: number; scrollY: number }) {
+    this.setters.setPlayerScroll(newScroll);
+    this.sessionPlayerState.playerScroll = newScroll;
   }
 
   play(): void {
@@ -85,6 +107,7 @@ export class SessionPlayerService {
     if (isRestart) {
       clearAllInputs(this.keydownEvents);
       this.setCurrentTimestamp(first(this.events).timestamp);
+      this.setPlayerScroll({ scrollX: 0, scrollY: 0 });
     }
 
     const playStartTimestamp = this.sessionPlayerState.curTimestamp;
@@ -129,7 +152,12 @@ export class SessionPlayerService {
             setTimeout(() => hideMouseEvent(event), MILLIS_TO_HIDE_MOUSE_EVENTS)
           );
         } else if (event.type === "ui") {
-          displayUIEvent(event);
+          displayUIEvent(event, this.setPlayerDimensions);
+        } else if (event.name === "scroll") {
+          this.setPlayerScroll({
+            scrollX: event.properties.scrollX,
+            scrollY: event.properties.scrollY,
+          });
         }
       }, timestamp - playStartTimestamp);
 
@@ -149,7 +177,8 @@ export class SessionPlayerService {
     this.pause();
     clearAllInputs(this.keydownEvents);
     this.mouseEvents.forEach(hideMouseEvent);
-    displayUIEvent(this.uiEvents[0]);
+    displayUIEvent(this.uiEvents[0], this.setPlayerDimensions);
     this.setCurrentTimestamp(this.events[0].timestamp);
+    this.setPlayerScroll({ scrollX: 0, scrollY: 0 });
   }
 }
