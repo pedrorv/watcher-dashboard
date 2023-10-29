@@ -28,7 +28,14 @@ export class SessionPlayerService {
 
   static filterSessionEvents(events: any[]) {
     return events.filter((e) =>
-      ["keydown", "mousemove", "click", "dom-change", "scroll"].includes(e.name)
+      [
+        "keydown",
+        "mousemove",
+        "click",
+        "dom-change",
+        "scroll",
+        "resize",
+      ].includes(e.name)
     );
   }
 
@@ -80,11 +87,11 @@ export class SessionPlayerService {
     this.sessionPlayerState.curTimestamp = timestamp;
   }
 
-  private setPlayerDimensions = (event: any) => {
-    this.setters.setPlayerDimensions({
-      width: event.properties.innerWidth,
-      height: event.properties.innerHeight,
-    });
+  private setPlayerDimensions = (dimensions: {
+    width: number;
+    height: number;
+  }) => {
+    this.setters.setPlayerDimensions(dimensions);
   };
 
   private setPlayerScroll(newScroll: { scrollX: number; scrollY: number }) {
@@ -152,11 +159,20 @@ export class SessionPlayerService {
             setTimeout(() => hideMouseEvent(event), MILLIS_TO_HIDE_MOUSE_EVENTS)
           );
         } else if (event.type === "ui") {
-          displayUIEvent(event, this.setPlayerDimensions);
+          displayUIEvent(event);
+          this.setPlayerDimensions({
+            width: event.properties.innerWidth,
+            height: event.properties.innerHeight,
+          });
         } else if (event.name === "scroll") {
           this.setPlayerScroll({
             scrollX: event.properties.scrollX,
             scrollY: event.properties.scrollY,
+          });
+        } else if (event.name === "resize") {
+          this.setPlayerDimensions({
+            width: event.properties.innerWidth,
+            height: event.properties.innerHeight,
           });
         }
       }, timestamp - playStartTimestamp);
@@ -177,7 +193,12 @@ export class SessionPlayerService {
     this.pause();
     clearAllInputs(this.keydownEvents);
     this.mouseEvents.forEach(hideMouseEvent);
-    displayUIEvent(this.uiEvents[0], this.setPlayerDimensions);
+    const uiEvent = first(this.uiEvents);
+    displayUIEvent(uiEvent);
+    this.setPlayerDimensions({
+      width: uiEvent.properties.innerWidth,
+      height: uiEvent.properties.innerHeight,
+    });
     this.setCurrentTimestamp(this.events[0].timestamp);
     this.setPlayerScroll({ scrollX: 0, scrollY: 0 });
   }

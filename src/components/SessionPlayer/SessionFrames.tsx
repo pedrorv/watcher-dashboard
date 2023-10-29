@@ -10,7 +10,7 @@ export const SessionFrames = ({ uiEvents }: { uiEvents: any[] }) => {
             class="session-frame"
             classList={{ visible: !i() }}
             style={{ border: "none", margin: "0 auto" }}
-            width={event.properties.innerWidth}
+            width={event.properties.htmlWidth}
             height={event.properties.htmlHeight}
             srcdoc={event.properties.screenshot}
           />
