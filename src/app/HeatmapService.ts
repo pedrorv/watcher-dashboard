@@ -37,14 +37,8 @@ export class HeatmapService {
     });
 
     const data = this.mouseEvents.map((event) => ({
-      x:
-        event.properties.pageX ??
-        event.properties.screenX ??
-        event.properties.clientX,
-      y:
-        event.properties.pageY ??
-        event.properties.screenY ??
-        event.properties.clientY,
+      x: event.properties.pageX ?? event.properties.clientX,
+      y: event.properties.pageY ?? event.properties.clientY,
       value: mouseEventNameToVal(event.name),
     }));
 
