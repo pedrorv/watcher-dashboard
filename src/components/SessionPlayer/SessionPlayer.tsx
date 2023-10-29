@@ -7,6 +7,7 @@ import { SessionPlayerService } from "@/app/SessionPlayerService";
 import "./SessionPlayer.scss";
 import { SessionControls } from "./SessionControls";
 import { first, last } from "@/lib/array";
+import { calcScaleRatio } from "@/lib/scale";
 
 export const SessionPlayer = (props: { events: any[] }) => {
   const uiEvents = createMemo(() =>
@@ -69,9 +70,15 @@ export const SessionPlayer = (props: { events: any[] }) => {
     const sessionPlayer = document.getElementById("session-player");
 
     if (sessionPlayer) {
+      const { innerHeight, innerWidth } = window;
+      const hScale = calcScaleRatio(innerHeight, playerDimensions().height);
+      const wScale = calcScaleRatio(innerWidth, playerDimensions().width);
+      const ratio = Math.min(hScale, wScale);
+
       Object.assign(sessionPlayer.style, {
         width: playerDimensions().width + "px",
         height: playerDimensions().height + "px",
+        transform: `scale(${ratio}) translate(-50%, calc(-50% - 62px))`,
       });
     }
     requestAnimationFrame(updatePlayerSize);
