@@ -16,15 +16,14 @@ export const playSessionOperationsFactory = (
     }
   };
 
-  const displayKeydownEvent = ({
-    unique_selector,
-  }: {
-    unique_selector: string;
-  }) => {
-    updateInputValue(
-      sessionPlayerState.activeIframe,
+  const displayKeydownEvent = (event: any) => {
+    const {
       unique_selector,
-      (val) => val + "*"
+      properties: { value },
+    } = event;
+
+    updateInputValue(sessionPlayerState.activeIframe, unique_selector, (val) =>
+      value ? value : val + "*"
     );
   };
 
