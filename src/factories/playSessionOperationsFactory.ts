@@ -27,16 +27,25 @@ export const playSessionOperationsFactory = (
     );
   };
 
-  const clearAllInputs = (keydownEvents: any[]) => {
+  const clearAllInputs = (iframe: HTMLIFrameElement, keydownEvents: any[]) => {
     const uniqueSelectors = Array.from(
       new Set(keydownEvents.map((e) => e.unique_selector))
     );
-    const iframes = document.querySelectorAll("iframe.session-frame");
 
     uniqueSelectors.forEach((selector) => {
-      iframes.forEach((iframe) => {
-        updateInputValue(iframe as HTMLIFrameElement, selector, () => "");
-      });
+      updateInputValue(iframe as HTMLIFrameElement, selector, () => "");
+    });
+  };
+
+  const replaceAllBreaks = () => {
+    const iframes = document.querySelectorAll("iframe.session-frame");
+
+    iframes.forEach((iframe) => {
+      (iframe as HTMLIFrameElement)?.contentWindow?.document
+        ?.querySelectorAll("textarea")
+        .forEach((textarea) => {
+          textarea.value = textarea.value.replace(/<br>/gi, "\n");
+        });
     });
   };
 
@@ -75,5 +84,6 @@ export const playSessionOperationsFactory = (
     hideMouseEvent,
     displayUIEvent,
     clearAllInputs,
+    replaceAllBreaks,
   };
 };

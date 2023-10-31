@@ -68,12 +68,6 @@ export class SessionPlayerService {
     return eventsAndEmptyEvents;
   }
 
-  private get keydownEvents(): any[] {
-    return this.originalEvents.filter(
-      (e) => e.type === "keyboard" && e.name === "keydown"
-    );
-  }
-
   private get mouseEvents(): any[] {
     return this.originalEvents.filter((e) => e.type === "mouse");
   }
@@ -105,14 +99,14 @@ export class SessionPlayerService {
       displayMouseEvent,
       displayUIEvent,
       hideMouseEvent,
-      clearAllInputs,
+      replaceAllBreaks,
     } = playSessionOperationsFactory(this.sessionPlayerState);
+    replaceAllBreaks();
 
     const isRestart =
       this.sessionPlayerState.curTimestamp === last(this.events).timestamp;
 
     if (isRestart) {
-      clearAllInputs(this.keydownEvents);
       this.setCurrentTimestamp(first(this.events).timestamp);
       this.setPlayerScroll({ scrollX: 0, scrollY: 0 });
     }
@@ -187,11 +181,11 @@ export class SessionPlayerService {
   }
 
   stop(): void {
-    const { clearAllInputs, hideMouseEvent, displayUIEvent } =
-      playSessionOperationsFactory(this.sessionPlayerState);
+    const { hideMouseEvent, displayUIEvent } = playSessionOperationsFactory(
+      this.sessionPlayerState
+    );
 
     this.pause();
-    clearAllInputs(this.keydownEvents);
     this.mouseEvents.forEach(hideMouseEvent);
     const uiEvent = first(this.uiEvents);
     displayUIEvent(uiEvent);
