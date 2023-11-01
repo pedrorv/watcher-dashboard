@@ -1,5 +1,6 @@
 import { Show, createResource } from "solid-js";
 import { useParams } from "@solidjs/router";
+import { HOST } from "@/config";
 import { Spinner } from "@/components/Spinner";
 import { SessionPlayer } from "@/components/SessionPlayer";
 import { SessionPlayerService } from "@/app/SessionPlayerService";
@@ -7,7 +8,7 @@ import { SessionPlayerService } from "@/app/SessionPlayerService";
 import "./SessionRecording.scss";
 
 const getEvents = (sessionId: string): Promise<any[]> =>
-  fetch(`http://localhost:3000/events/${sessionId}`)
+  fetch(`${HOST}/events/${sessionId}`)
     .then((res) => res.json())
     .then(SessionPlayerService.filterSessionEvents)
     .catch(() => []);

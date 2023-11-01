@@ -1,5 +1,6 @@
 import { Show, createResource } from "solid-js";
 import { useParams } from "@solidjs/router";
+import { HOST } from "@/config";
 import { Spinner } from "@/components/Spinner";
 import { Heatmap } from "@/components/Heatmap";
 import { HeatmapService } from "@/app/HeatmapService";
@@ -7,7 +8,7 @@ import { HeatmapService } from "@/app/HeatmapService";
 import "./SessionHeatmap.scss";
 
 const getEvents = (sessionId: string): Promise<any[]> =>
-  fetch(`http://localhost:3000/events/${sessionId}`)
+  fetch(`${HOST}/events/${sessionId}`)
     .then((res) => res.json())
     .then(HeatmapService.filterHeatmapEvents)
     .catch(() => []);
