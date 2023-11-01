@@ -1,4 +1,4 @@
-import { createEffect, createResource } from "solid-js";
+import { Show, createEffect, createResource } from "solid-js";
 import { Outlet, useNavigate } from "@solidjs/router";
 import { getAuthToken, getIsAuthorized } from "@/auth";
 
@@ -15,5 +15,9 @@ export const AuthorizedOnly = () => {
     }
   });
 
-  return <Outlet />;
+  return (
+    <Show when={isAuthorized()}>
+      <Outlet />
+    </Show>
+  );
 };
