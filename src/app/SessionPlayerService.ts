@@ -68,6 +68,10 @@ export class SessionPlayerService {
     return eventsAndEmptyEvents;
   }
 
+  private get keydownEvents(): any[] {
+    return this.originalEvents.filter((e) => e.name === "keydown");
+  }
+
   private get mouseEvents(): any[] {
     return this.originalEvents.filter((e) => e.type === "mouse");
   }
@@ -93,29 +97,13 @@ export class SessionPlayerService {
     this.sessionPlayerState.playerScroll = newScroll;
   }
 
-  play(): void {
-    const {
-      displayKeydownEvent,
-      displayMouseEvent,
-      displayUIEvent,
-      hideMouseEvent,
-      replaceAllBreaks,
-    } = playSessionOperationsFactory(this.sessionPlayerState);
-    replaceAllBreaks();
-
-    const isRestart =
-      this.sessionPlayerState.curTimestamp === last(this.events).timestamp;
-
-    if (isRestart) {
-      this.setCurrentTimestamp(first(this.events).timestamp);
-      this.setPlayerScroll({ scrollX: 0, scrollY: 0 });
-    }
+  private eventsToHide() {
+    const { hideMouseEvent } = playSessionOperationsFactory(
+      this.sessionPlayerState
+    );
 
     const playStartTimestamp = this.sessionPlayerState.curTimestamp;
 
-    const eventsToDisplay = this.events.filter(
-      (e) => e.timestamp >= playStartTimestamp
-    );
     const eventsToHide = this.originalEvents.filter(
       (e) =>
         e.timestamp >= playStartTimestamp - MILLIS_TO_HIDE_MOUSE_EVENTS &&
@@ -138,6 +126,21 @@ export class SessionPlayerService {
 
       this.sessionPlayerState.timers.push(timer);
     });
+  }
+
+  private eventsToDisplay() {
+    const {
+      displayKeydownEvent,
+      displayMouseEvent,
+      displayUIEvent,
+      hideMouseEvent,
+    } = playSessionOperationsFactory(this.sessionPlayerState);
+
+    const playStartTimestamp = this.sessionPlayerState.curTimestamp;
+
+    const eventsToDisplay = this.events.filter(
+      (e) => e.timestamp >= playStartTimestamp
+    );
 
     eventsToDisplay.forEach((event) => {
       const { timestamp } = event;
@@ -175,12 +178,83 @@ export class SessionPlayerService {
     });
   }
 
-  pause(): void {
+  private clearTimeouts() {
     this.sessionPlayerState.timers.forEach(clearTimeout);
     this.sessionPlayerState.timers = [];
   }
 
-  stop(): void {
+  private hideAllMouseEvents() {
+    document
+      .querySelectorAll(".mouse-event")
+      .forEach((element) => element.classList.remove("visible"));
+  }
+
+  set(timestamp: number) {
+    const { displayUIEvent, displayMouseEvent, displayKeydownEvent } =
+      playSessionOperationsFactory(this.sessionPlayerState);
+
+    const uiEventToRender = last(
+      this.uiEvents.filter((e) => e.timestamp <= timestamp)
+    );
+    const scrollEventToRender = last(
+      this.events.filter((e) => e.name === "scroll" && e.timestamp <= timestamp)
+    );
+
+    if (!uiEventToRender) return;
+
+    const mouseEventsToRender = this.mouseEvents.filter(
+      (e) =>
+        e.timestamp > timestamp - MILLIS_TO_HIDE_MOUSE_EVENTS &&
+        e.timestamp <= timestamp
+    );
+    const keydownEventsToRender = this.keydownEvents.filter(
+      (e) =>
+        e.timestamp >= uiEventToRender.timestamp && e.timestamp <= timestamp
+    );
+
+    this.clearTimeouts();
+    this.setCurrentTimestamp(timestamp);
+    displayUIEvent(uiEventToRender);
+
+    if (scrollEventToRender) {
+      this.setPlayerScroll({
+        scrollX: scrollEventToRender.properties.scrollX,
+        scrollY: scrollEventToRender.properties.scrollY,
+      });
+    }
+
+    if (this.sessionPlayerState.isPlaying()) {
+      this.play();
+    } else {
+      this.hideAllMouseEvents();
+      mouseEventsToRender.forEach((event) => displayMouseEvent(event));
+      keydownEventsToRender.forEach((event) => displayKeydownEvent(event));
+    }
+  }
+
+  play() {
+    const { replaceAllBreaks } = playSessionOperationsFactory(
+      this.sessionPlayerState
+    );
+    replaceAllBreaks();
+
+    const isRestart =
+      this.sessionPlayerState.curTimestamp === last(this.events).timestamp;
+
+    if (isRestart) {
+      this.setCurrentTimestamp(first(this.events).timestamp);
+      this.setPlayerScroll({ scrollX: 0, scrollY: 0 });
+    }
+
+    this.eventsToDisplay();
+    this.eventsToHide();
+  }
+
+  pause() {
+    this.clearTimeouts();
+  }
+
+  stop() {
     const { hideMouseEvent, displayUIEvent } = playSessionOperationsFactory(
       this.sessionPlayerState
     );

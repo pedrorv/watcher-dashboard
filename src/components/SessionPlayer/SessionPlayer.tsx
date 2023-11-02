@@ -28,6 +28,8 @@ export const SessionPlayer = (props: { events: any[] }) => {
     scrollX: 0,
     scrollY: 0,
   });
+  const setTimestamp = (timestamp: number) =>
+    sessionPlayerService.set(timestamp);
 
   const togglePlaying = () => {
     if (playing()) {
@@ -42,13 +44,14 @@ export const SessionPlayer = (props: { events: any[] }) => {
     sessionPlayerService.stop();
   };
   const activeIframe = document.querySelector(
-    "session-frame.visible"
+    ".session-frame.visible"
   ) as HTMLIFrameElement;
   const sessionPlayerState = {
     activeIframe,
     timers: [],
     curTimestamp: curTimestamp(),
     playerScroll: playerScroll(),
+    isPlaying: () => playing(),
   };
   const sessionPlayerService = new SessionPlayerService(
     sessionPlayerState,
@@ -112,6 +115,7 @@ export const SessionPlayer = (props: { events: any[] }) => {
         playing={playing()}
         togglePlaying={togglePlaying}
         stopPlaying={stopPlaying}
+        setTimestamp={setTimestamp}
         minTimestamp={minTimestamp}
         curTimestamp={curTimestamp()}
         maxTimestamp={maxTimestamp}

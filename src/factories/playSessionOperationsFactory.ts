@@ -65,7 +65,9 @@ export const playSessionOperationsFactory = (
 
   const displayUIEvent = (event: any) => {
     const currentIframe = document.getElementById(event.id);
-    const previousIframe = sessionPlayerState.activeIframe;
+    const previousIframe =
+      sessionPlayerState.activeIframe ??
+      document.querySelector(".session-frame.visible");
 
     if (currentIframe) {
       sessionPlayerState.activeIframe = currentIframe as HTMLIFrameElement;

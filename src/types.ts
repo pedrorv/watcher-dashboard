@@ -8,4 +8,5 @@ export type SessionPlayerState = {
     scrollX: number;
     scrollY: number;
   };
+  isPlaying: () => boolean;
 };
