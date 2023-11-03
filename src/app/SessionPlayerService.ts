@@ -215,6 +215,7 @@ export class SessionPlayerService {
     this.clearTimeouts();
     this.setCurrentTimestamp(timestamp);
     displayUIEvent(uiEventToRender);
+    this.hideAllMouseEvents();
 
     if (scrollEventToRender) {
       this.setPlayerScroll({
@@ -226,7 +227,6 @@ export class SessionPlayerService {
     if (this.sessionPlayerState.isPlaying()) {
       this.play();
     } else {
-      this.hideAllMouseEvents();
       mouseEventsToRender.forEach((event) => displayMouseEvent(event));
       keydownEventsToRender.forEach((event) => displayKeydownEvent(event));
     }
