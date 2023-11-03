@@ -190,8 +190,12 @@ export class SessionPlayerService {
   }
 
   set(timestamp: number) {
-    const { displayUIEvent, displayMouseEvent, displayKeydownEvent } =
-      playSessionOperationsFactory(this.sessionPlayerState);
+    const {
+      displayUIEvent,
+      displayMouseEvent,
+      displayKeydownEvent,
+      replaceAllBreaks,
+    } = playSessionOperationsFactory(this.sessionPlayerState);
 
     const uiEventToRender = last(
       this.uiEvents.filter((e) => e.timestamp <= timestamp)
@@ -215,6 +219,7 @@ export class SessionPlayerService {
     this.clearTimeouts();
     this.setCurrentTimestamp(timestamp);
     displayUIEvent(uiEventToRender);
+    replaceAllBreaks();
     this.hideAllMouseEvents();
 
     if (scrollEventToRender) {
