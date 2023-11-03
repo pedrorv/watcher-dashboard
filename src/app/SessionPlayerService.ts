@@ -222,12 +222,10 @@ export class SessionPlayerService {
     replaceAllBreaks();
     this.hideAllMouseEvents();
 
-    if (scrollEventToRender) {
-      this.setPlayerScroll({
-        scrollX: scrollEventToRender.properties.scrollX,
-        scrollY: scrollEventToRender.properties.scrollY,
-      });
-    }
+    this.setPlayerScroll({
+      scrollX: scrollEventToRender?.properties?.scrollX ?? 0,
+      scrollY: scrollEventToRender?.properties?.scrollY ?? 0,
+    });
 
     if (this.sessionPlayerState.isPlaying()) {
       this.play();
