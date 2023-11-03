@@ -1,10 +1,10 @@
-import { HOST } from "@/config";
+import { SERVER_HOST } from "@/config";
 
 const AUTH_TOKEN_KEY = "auth-token";
 
 export const getIsAuthorized = async (authToken: string): Promise<boolean> => {
   try {
-    const res = await fetch(`${HOST}/authorized`, {
+    const res = await fetch(`${SERVER_HOST}/authorized`, {
       headers: { "auth-token": authToken },
     });
 

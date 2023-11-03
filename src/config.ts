@@ -1,3 +1,1 @@
-export const HOST = import.meta.env.PROD
-  ? "https://watcher-server.onrender.com"
-  : "http://localhost:3000";
+export const SERVER_HOST = import.meta.env.VITE_WATCHER_HOST;

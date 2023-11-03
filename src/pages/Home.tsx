@@ -1,12 +1,12 @@
 import { For, createResource } from "solid-js";
 import { A } from "@solidjs/router";
-import { HOST } from "@/config";
+import { SERVER_HOST } from "@/config";
 import { Spinner } from "../components/Spinner";
 
 const getSessions = (
   appId: string
 ): Promise<{ id: string; lastEventTimestamp: number }[]> =>
-  fetch(`${HOST}/sessions/${appId}`, {
+  fetch(`${SERVER_HOST}/sessions/${appId}`, {
     headers: { "auth-token": getAuthToken() },
   })
     .then((res) => res.json())
