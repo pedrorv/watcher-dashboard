@@ -11,6 +11,27 @@ type SessionControlsProps = {
   maxTimestamp: number;
 };
 
+const millisToSeconds = (n: number) => Math.round(n / 1000);
+const secondsToClock = (n: number) => {
+  const hour = 60 * 60;
+  const minute = 60;
+
+  const hours = Math.floor(n / hour)
+    .toString()
+    .padStart(2, "0");
+  const hoursRemainder = n % hour;
+  const minutes = Math.floor(hoursRemainder / minute)
+    .toString()
+    .padStart(2, "0");
+  const seconds = (hoursRemainder % minute).toString().padStart(2, "0");
+
+  if (hours !== "00") {
+    return `${hours}:${minutes}:${seconds}`;
+  }
+
+  return `${minutes}:${seconds}`;
+};
+
 export const SessionControls = (props: SessionControlsProps) => {
   const percentage = createMemo(() =>
     Math.max(
@@ -37,6 +58,13 @@ export const SessionControls = (props: SessionControlsProps) => {
     props.setTimestamp(moveToTimestamp);
   };
 
+  const elapsedClock = createMemo(() =>
+    secondsToClock(millisToSeconds(props.curTimestamp - props.minTimestamp))
+  );
+  const durationClock = createMemo(() =>
+    secondsToClock(millisToSeconds(props.maxTimestamp - props.minTimestamp))
+  );
+
   return (
     <div class="session-controls">
       <div
@@ -45,11 +73,13 @@ export const SessionControls = (props: SessionControlsProps) => {
         onClick={props.togglePlaying}
       />
       <div class="stop-btn" onClick={props.stopPlaying} />
+      <div class="clock elapsed">{elapsedClock()}</div>
       <div class="track-container" onClick={onClick}>
         <div class="track-background" />
         <div class="track-foreground" style={{ width: `${percentage()}%` }} />
         <div class="track-dot" style={{ left: `${percentage()}%` }} />
       </div>
+      <div class="clock duration">{durationClock()}</div>
     </div>
   );
 };

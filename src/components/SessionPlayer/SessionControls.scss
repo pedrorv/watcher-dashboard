@@ -52,7 +52,7 @@ $light-color: #a0a0a0;
 
   .track-container {
     position: relative;
-    width: 100%;
+    flex: 1;
     height: 10px;
     border-radius: 5px;
     cursor: pointer;
@@ -82,6 +82,21 @@ $light-color: #a0a0a0;
       border: 4px solid $dark-color;
       top: 50%;
       transform: translate(-50%, -50%);
+    }
+  }
+
+  .clock {
+    color: $medium-color;
+    text-align: center;
+    font-weight: bold;
+    font-family: monospace;
+
+    &.elapsed {
+      margin-right: 1.5rem;
+    }
+
+    &.duration {
+      margin-left: 1.5rem;
     }
   }
 }
