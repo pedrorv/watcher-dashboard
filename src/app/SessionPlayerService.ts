@@ -27,15 +27,16 @@ export class SessionPlayerService {
   }
 
   static filterSessionEvents(events: any[]) {
-    return events.filter((e) =>
-      [
-        "keydown",
-        "mousemove",
-        "click",
-        "dom-change",
-        "scroll",
-        "resize",
-      ].includes(e.name)
+    return events.filter(
+      (e) =>
+        [
+          "keydown",
+          "mousemove",
+          "click",
+          "dom-change",
+          "scroll",
+          "resize",
+        ].includes(e.name) || ["drag"].includes(e.type)
     );
   }
 
@@ -76,6 +77,10 @@ export class SessionPlayerService {
     return this.originalEvents.filter((e) => e.type === "mouse");
   }
 
+  private get dragEvents(): any[] {
+    return this.originalEvents.filter((e) => e.type === "drag");
+  }
+
   private get uiEvents(): any[] {
     return this.originalEvents.filter((e) => e.type === "ui");
   }
@@ -98,7 +103,7 @@ export class SessionPlayerService {
   }
 
   private eventsToHide() {
-    const { hideMouseEvent } = playSessionOperationsFactory(
+    const { hideMouseEvent, hideDragEvent } = playSessionOperationsFactory(
       this.sessionPlayerState
     );
 
@@ -108,7 +113,7 @@ export class SessionPlayerService {
       (e) =>
         e.timestamp >= playStartTimestamp - MILLIS_TO_HIDE_MOUSE_EVENTS &&
         e.timestamp <= playStartTimestamp &&
-        e.type === "mouse"
+        ["mouse", "drag"].includes(e.type)
     );
 
     const hideStartTimestamp = eventsToHide[0]?.timestamp;
@@ -117,10 +122,10 @@ export class SessionPlayerService {
 
       const timer = setTimeout(() => {
         this.sessionPlayerState.timers.push(
-          setTimeout(
-            () => hideMouseEvent(event),
-            timestamp - playStartTimestamp + MILLIS_TO_HIDE_MOUSE_EVENTS
-          )
+          setTimeout(() => {
+            if (event.type === "mouse") hideMouseEvent(event);
+            else if (event.type === "drag") hideDragEvent(event);
+          }, timestamp - playStartTimestamp + MILLIS_TO_HIDE_MOUSE_EVENTS)
         );
       }, timestamp - hideStartTimestamp);
 
@@ -134,6 +139,8 @@ export class SessionPlayerService {
       displayMouseEvent,
       displayUIEvent,
       hideMouseEvent,
+      displayDragEvent,
+      hideDragEvent,
     } = playSessionOperationsFactory(this.sessionPlayerState);
 
     const playStartTimestamp = this.sessionPlayerState.curTimestamp;
@@ -154,6 +161,11 @@ export class SessionPlayerService {
           displayMouseEvent(event);
           this.sessionPlayerState.timers.push(
             setTimeout(() => hideMouseEvent(event), MILLIS_TO_HIDE_MOUSE_EVENTS)
+          );
+        } else if (event.type === "drag") {
+          displayDragEvent(event);
+          this.sessionPlayerState.timers.push(
+            setTimeout(() => hideDragEvent(event), MILLIS_TO_HIDE_MOUSE_EVENTS)
           );
         } else if (event.type === "ui") {
           displayUIEvent(event);
@@ -189,11 +201,18 @@ export class SessionPlayerService {
       .forEach((element) => element.classList.remove("visible"));
   }
 
+  private hideAllDragEvents() {
+    document
+      .querySelectorAll(".drag-event")
+      .forEach((element) => element.classList.remove("visible"));
+  }
+
   set(timestamp: number) {
     const {
       displayUIEvent,
       displayMouseEvent,
       displayKeydownEvent,
+      displayDragEvent,
       replaceAllBreaks,
     } = playSessionOperationsFactory(this.sessionPlayerState);
 
@@ -211,6 +230,11 @@ export class SessionPlayerService {
         e.timestamp > timestamp - MILLIS_TO_HIDE_MOUSE_EVENTS &&
         e.timestamp <= timestamp
     );
+    const dragEventsToRender = this.dragEvents.filter(
+      (e) =>
+        e.timestamp > timestamp - MILLIS_TO_HIDE_MOUSE_EVENTS &&
+        e.timestamp <= timestamp
+    );
     const keydownEventsToRender = this.keydownEvents.filter(
       (e) =>
         e.timestamp >= uiEventToRender.timestamp && e.timestamp <= timestamp
@@ -221,6 +245,7 @@ export class SessionPlayerService {
     displayUIEvent(uiEventToRender);
     replaceAllBreaks();
     this.hideAllMouseEvents();
+    this.hideAllDragEvents();
 
     this.setPlayerScroll({
       scrollX: scrollEventToRender?.properties?.scrollX ?? 0,
@@ -231,6 +256,7 @@ export class SessionPlayerService {
       this.play();
     } else {
       mouseEventsToRender.forEach((event) => displayMouseEvent(event));
+      dragEventsToRender.forEach((event) => displayDragEvent(event));
       keydownEventsToRender.forEach((event) => displayKeydownEvent(event));
     }
   }
@@ -258,12 +284,12 @@ export class SessionPlayerService {
   }
 
   stop() {
-    const { hideMouseEvent, displayUIEvent } = playSessionOperationsFactory(
-      this.sessionPlayerState
-    );
+    const { hideMouseEvent, hideDragEvent, displayUIEvent } =
+      playSessionOperationsFactory(this.sessionPlayerState);
 
     this.pause();
     this.mouseEvents.forEach(hideMouseEvent);
+    this.dragEvents.forEach(hideDragEvent);
     const uiEvent = first(this.uiEvents);
     displayUIEvent(uiEvent);
     this.setPlayerDimensions({

@@ -2,6 +2,7 @@ import { createMemo, createEffect, createSignal } from "solid-js";
 
 import { SessionFrames } from "./SessionFrames";
 import { MouseEvents } from "./MouseEvents";
+import { DragEvents } from "./DragEvents";
 import { SessionPlayerService } from "@/app/SessionPlayerService";
 
 import "./SessionPlayer.scss";
@@ -15,6 +16,9 @@ export const SessionPlayer = (props: { events: any[] }) => {
   );
   const mouseEvents = createMemo(() =>
     props.events.filter((e) => e.type === "mouse")
+  );
+  const dragEvents = createMemo(() =>
+    props.events.filter((e) => e.type === "drag")
   );
   const minTimestamp = first(props.events)?.timestamp;
   const maxTimestamp = last(props.events)?.timestamp;
@@ -109,6 +113,7 @@ export const SessionPlayer = (props: { events: any[] }) => {
         <div id="session-player-scroll">
           <SessionFrames uiEvents={uiEvents()} />
           <MouseEvents mouseEvents={mouseEvents()} />
+          <DragEvents dragEvents={dragEvents()} />
         </div>
       </div>
       <SessionControls
