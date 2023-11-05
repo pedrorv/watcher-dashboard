@@ -1,4 +1,4 @@
-import { Component, Show } from "solid-js";
+import { Component } from "solid-js";
 import { useNavigate, useLocation } from "@solidjs/router";
 
 import "./Header.scss";
