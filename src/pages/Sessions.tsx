@@ -28,7 +28,10 @@ export const Sessions = () => {
           {(session) => (
             <div class="session-card">
               <h1>Sessão {session.id}</h1>
-              <p>em {new Date(session.lastEventTimestamp).toISOString()}</p>
+              <p>
+                em{" "}
+                {new Date(session.lastEventTimestamp).toLocaleString("pt-BR")}
+              </p>
 
               <nav>
                 <A href={`/session/${session.id}/recording`}>
