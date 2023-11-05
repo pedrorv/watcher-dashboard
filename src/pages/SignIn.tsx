@@ -37,13 +37,13 @@ export const SignIn = () => {
   return (
     <main class="page sign-in">
       <Show when={!isAuthorized()} fallback={<Spinner size={60} />}>
-        <h1>Enter auth token</h1>
+        <h1>Digite o token de autorização</h1>
         <input
           type="password"
           classList={{ error: error() }}
           onInput={onInput}
         />
-        <button onClick={() => setToken(getAuthToken())}>Login</button>
+        <button onClick={() => setToken(getAuthToken())}>Autenticar</button>
       </Show>
     </main>
   );

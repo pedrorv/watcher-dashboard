@@ -1,4 +1,4 @@
-main.home {
+main.apps {
   section {
     display: flex;
     flex-direction: column;
@@ -6,7 +6,7 @@ main.home {
     padding-bottom: 3rem;
   }
 
-  .session-card {
+  .app-card {
     padding: 1rem 2rem;
     background: #fff;
     color: #333;

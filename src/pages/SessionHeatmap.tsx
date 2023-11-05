@@ -1,6 +1,7 @@
 import { Show, createResource } from "solid-js";
 import { useParams } from "@solidjs/router";
 import { SERVER_HOST } from "@/config";
+import { Header } from "@/components/Header";
 import { Spinner } from "@/components/Spinner";
 import { Heatmap } from "@/components/Heatmap";
 import { HeatmapService } from "@/app/HeatmapService";
@@ -19,9 +20,7 @@ export const SessionHeatmap = () => {
 
   return (
     <main class="page session-heatmap">
-      <header>
-        <h1>Session Heatmap</h1>
-      </header>
+      <Header heading="Mapa de calor da sessão" />
       <section>
         <Show
           when={!events.loading && events.state === "ready"}

@@ -1,0 +1,30 @@
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  box-sizing: border-box;
+
+  position: relative;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 2rem;
+
+  button {
+    outline: none !important;
+    width: 8rem;
+
+    &.arrow {
+      font-size: 5rem;
+      border: none !important;
+      background: none;
+      align-self: center;
+      padding: 0;
+      height: 5rem;
+    }
+
+    &.hidden {
+      visibility: hidden;
+    }
+  }
+}
