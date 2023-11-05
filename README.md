@@ -1,6 +1,6 @@
 # Watcher Dashboard
 
-This project is a simple dashboard to display for usage data collected by the [watcher](https://github.com/pedrorv/watcher) project. You also need to fetch data from a [watcher-server](https://github.com/pedrorv/watcher-server). Protected routes can only be acessed by passing the `AUTH_TOKEN` from the [watcher-server](https://github.com/pedrorv/watcher-server).
+This project is a simple dashboard to display usage data collected by the [watcher](https://github.com/pedrorv/watcher) project. You also need to fetch data from a [watcher-server](https://github.com/pedrorv/watcher-server). Protected routes can only be acessed by passing the `AUTH_TOKEN` from the [watcher-server](https://github.com/pedrorv/watcher-server).
 
 ## Usage
 
