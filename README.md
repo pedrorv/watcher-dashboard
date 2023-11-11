@@ -30,6 +30,18 @@ Builds the app for production to the `dist` folder. It correctly bundles Solid i
 
 Learn more about configuring your environment variables in the [documentation](https://v2.vitejs.dev/guide/env-and-mode.html). All variables are defined in the example `.env` file.
 
+## Application Routing
+
+This application uses `@solidjs/router` for client-side routing, providing a seamless user experience. Below is an overview of the available routes and their respective responsibilities:
+
+### Routes Overview
+
+- `/auth`: This route leads to the authentication page where users can sign in using the AUTH_TOKEN from [watcher-server](https://github.com/pedrorv/watcher-server).
+- `/`: Displays the home page of the application, which lists various applications or services available to the authorized user. Unauthorized users are redirected to `/auth`.
+- `/:appId/sessions`: Shows session information for a specific application. The `:appId` parameter in the URL is used to fetch and display session data relevant to the selected application. Also required authentication to be accessed.
+- `/session/:id/recording`: This route is used to display a specific session's recording. The session is identified using the `:id` parameter in the URL. This is a public route.
+- `/session/:id/heatmap`: Dedicated to showing a heatmap for a particular session. Similar to the session recording route, it uses the `:id` parameter to specify which session's heatmap to display. Also a public route.
+
 ## Deployment
 
 Learn more about deploying your application in the [documentation](https://vitejs.dev/guide/static-deploy.html).
