@@ -8,10 +8,12 @@ import {
 import { useNavigate } from "@solidjs/router";
 import { getAuthToken, getIsAuthorized, setAuthToken } from "@/auth";
 import { Spinner } from "@/components/Spinner";
+import { getTexts } from "@/lib/localization";
 
 import "./SignIn.scss";
 
 export const SignIn = () => {
+  const texts = getTexts().pages.signIn;
   const [error, setError] = createSignal(false);
   const [token, setToken] = createSignal("");
   const navigate = useNavigate();
@@ -37,13 +39,13 @@ export const SignIn = () => {
   return (
     <main class="page sign-in">
       <Show when={!isAuthorized()} fallback={<Spinner size={60} />}>
-        <h1>Digite o token de autorização</h1>
+        <h1>{texts.heading}</h1>
         <input
           type="password"
           classList={{ error: error() }}
           onInput={onInput}
         />
-        <button onClick={() => setToken(getAuthToken())}>Autenticar</button>
+        <button onClick={() => setToken(getAuthToken())}>{texts.button}</button>
       </Show>
     </main>
   );

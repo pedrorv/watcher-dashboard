@@ -1,5 +1,6 @@
 import { Component } from "solid-js";
 import { useNavigate, useLocation } from "@solidjs/router";
+import { getTexts } from "@/lib/localization";
 
 import "./Header.scss";
 
@@ -8,6 +9,7 @@ interface HeaderProps {
 }
 
 export const Header: Component<HeaderProps> = (props) => {
+  const texts = getTexts().components.header;
   const location = useLocation();
   const navigate = useNavigate();
   const goBack = () => navigate(-1);
@@ -31,7 +33,7 @@ export const Header: Component<HeaderProps> = (props) => {
         onClick={isHeatmap ? goToRecording : goToHeatmap}
         classList={{ hidden }}
       >
-        {isHeatmap ? "Gravação" : "Mapa de calor"}
+        {isHeatmap ? texts.recording : texts.heatmap}
       </button>
     </header>
   );

@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Spinner } from "@/components/Spinner";
 import { SessionPlayer } from "@/components/SessionPlayer";
 import { SessionPlayerService } from "@/app/SessionPlayerService";
+import { getTexts } from "@/lib/localization";
 
 import "./SessionRecording.scss";
 
@@ -15,12 +16,13 @@ const getEvents = (sessionId: string): Promise<any[]> =>
     .catch(() => []);
 
 export const SessionRecording = () => {
+  const texts = getTexts().pages.recording;
   const params = useParams();
   const [events] = createResource(() => params.id, getEvents);
 
   return (
     <main class="page session-recording">
-      <Header heading="Gravação da sessão" />
+      <Header heading={texts.heading} />
       <section>
         <Show
           when={!events.loading && events.state === "ready"}
